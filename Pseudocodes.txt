@@ -1,0 +1,179 @@
+Logistic Regression:
+Initialize
+beta = zero vector of size (n+1) x 1
+
+For t = 1 to T do
+# Step 1: Linear combination
+z = X * beta
+
+# Step 2: Apply sigmoid
+y_hat = 1 / (1 + exp(-z))
+
+# Step 3: Compute loss (Binary Cross Entropy)
+L = -(1/m) * [ y^T * log(y_hat)
+               + (1 - y)^T * log(1 - y_hat) ]
+
+# Step 4: Compute gradient
+gradient = (1/m) * X^T * (y_hat - y)
+
+# Step 5: Update parameters
+beta = beta - eta * gradient
+--------------------------------------------------------------------------------------------
+
+Linear Regression:
+Initialize
+beta = zero vector of size (n+1) x 1
+For t = 1 to T do
+y_hat = X * beta
+L = (1/(2*m)) * (y_hat - y)^T * (y_hat - y)
+gradient = (1/m) * X^T * (y_hat - y)
+beta = beta - eta * gradient
+End For
+Return beta
+-----------------------------------------------------------------------------------------------
+
+Naive Bayes:
+Input:
+X : m x n matrix
+y : m x 1 vector
+x : 1 x n sample to predict
+
+Output:
+predicted_class
+
+classes = unique(y)
+k = number of classes
+
+For each class c in classes
+X_c = rows of X where y == c
+prior[c] = rows(X_c) / m
+mean[c] = mean(X_c) along each feature
+var[c] = variance(X_c) along each feature
+End For
+
+For each class c in classes
+log_prob[c] = log(prior[c])
+For j = 1 to n
+log_prob[c] =
+log_prob[c]
+- 0.5 * log(2 * pi * var[c][j])
+- ((x[j] - mean[c][j])^2) / (2 * var[c][j])
+End For
+End For
+predicted_class = argmax(log_prob)
+Return predicted_class_
+---------------------------------------------------------------------------------
+K-NEAREST NEIGHBORS (KNN) — PSEUDOCODE
+
+Input:
+X_train : m x n matrix
+y_train : m x 1 vector
+x : 1 x n sample to predict
+k : number of neighbors
+
+Output:
+predicted_class
+
+For i = 1 to m
+distance[i] = sqrt( sum over j=1 to n of (X_train[i][j] - x[j])^2 )
+End For
+
+indices = indices of k smallest values in distance
+
+For each index in indices
+collect corresponding y_train value
+End For
+
+predicted_class = class with highest frequency among collected labels
+
+Return predicted_class
+--------------------------------------------------------------------------------------
+SVM (Linear, Soft Margin, Gradient Descent) — PSEUDOCODE
+Input:
+X : m x n matrix
+y : m x 1 vector (labels in {-1, +1})
+eta : learning rate
+lambda : regularization parameter
+T : number of epochs
+Output:
+w : n x 1 weight vector
+b : bias
+Initialize
+w = zero vector of size n x 1
+b = 0
+For t = 1 to T
+   For i = 1 to m  
+          condition = y[i] * ( dot(w, X[i]) + b )  
+          If condition >= 1  
+                 w = w - eta * (2 * lambda * w)  
+          Else  
+                 w = w - eta * (2 * lambda * w - y[i] * X[i])  
+                 b = b + eta * y[i]  
+          End If  
+   End For  
+End For
+Return w, b
+---------------------------------------------------------------------------
+DECISION TREE (Classification, using Gini Index) — PSEUDOCODE
+
+Input:
+X : m x n matrix
+y : m x 1 vector
+max_depth
+
+Output:
+tree
+
+Function BUILD_TREE(X, y, depth)
+
+   If all labels in y are same  
+          Return leaf node with that label  
+
+   If depth == max_depth OR X is empty  
+          Return leaf node with majority label in y  
+
+   best_feature = None  
+   best_threshold = None  
+   best_gini = infinity  
+
+   For each feature j = 1 to n  
+
+          thresholds = unique values of X[:, j]  
+
+          For each threshold t in thresholds  
+
+                 Split data:
+                        left  = samples where X[:, j] <= t
+                        right = samples where X[:, j] > t
+
+                 Compute Gini:
+                        gini_left  = 1 - sum(p_k^2 for each class in left)
+                        gini_right = 1 - sum(p_k^2 for each class in right)
+
+                 weighted_gini =
+                        (size(left)/m) * gini_left +
+                        (size(right)/m) * gini_right
+
+                 If weighted_gini < best_gini
+                        best_gini = weighted_gini
+                        best_feature = j
+                        best_threshold = t
+
+          End For
+   End For
+
+   Create node with best_feature and best_threshold
+
+   Split data using best_feature and best_threshold
+
+   node.left  = BUILD_TREE(left_X, left_y, depth + 1)
+   node.right = BUILD_TREE(right_X, right_y, depth + 1)
+
+   Return node
+
+
+End Function
+
+tree = BUILD_TREE(X, y, 0)
+
+Return tree
